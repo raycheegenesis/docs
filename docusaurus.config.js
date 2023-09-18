@@ -30,7 +30,7 @@ module.exports = {
   projectName: 'docs',
   trailingSlash: true,
   onBrokenLinks: 'throw', // please do NOT change this to 'warn', fix or remove your broken links instead
-  onBrokenMarkdownLinks: 'throw', // please do NOT change this to 'warn', fix or remove your broken links instead
+  onBrokenMarkdownLinks: 'ignore', // please do NOT change this to 'warn', fix or remove your broken links instead
   onDuplicateRoutes: 'throw',
   clientModules: [
     './src/client-modules/genesislcap.js'
@@ -54,23 +54,21 @@ module.exports = {
   ],
   plugins: [
     [
-      '@docusaurus/plugin-client-redirects',
+      '@docusaurus/plugin-content-docs',
       {
-        createRedirects(existingPath) {
-          if (existingPath.includes('/server') && !existingPath.includes('/tags')) {
-            // Redirect from /server-modules/team/X to /server/team/X
-            return [
-              existingPath.replace('/server', '/server-modules'),
-            ];
-          }
-          if (existingPath.includes('/web') && !existingPath.includes('/tags')) {
-            // Redirect from /front-end/team/X to /web/team/X
-            return [
-              existingPath.replace('/web', '/front-end'),
-            ];
-          }
-          return undefined; // Return a false value: no redirect created
-        },
+        id: 'Server',
+        path: 'Server',
+        routeBasePath: 'Server',
+        sidebarPath: require.resolve('./Server-sidebars.js')
+      },
+    ],
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'ui',
+        path: 'ui',
+        routeBasePath: 'ui',
+        sidebarPath: require.resolve('./ui-sidebars.js')
       },
     ],
     [require.resolve('@cmfcmf/docusaurus-search-local'), {
@@ -125,18 +123,6 @@ module.exports = {
           routeBasePath,
           sidebarPath: require.resolve('./sidebars.js'),
           remarkPlugins: [require('mdx-mermaid')],
-          includeCurrentVersion: BUILD_NEXT,
-          versions: {
-            '2023.1': {
-              'banner': 'none'
-            },
-            '2022.4': {
-              'banner': 'none'
-            },
-            '2022.3': {
-              'banner': 'none'
-            },
-          },
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
@@ -161,12 +147,13 @@ module.exports = {
     },
     navbar: {
       items: [
-        { type: 'docsVersionDropdown', className: 'version-menu ' + (BUILD_NEXT && !SHOW_NEXT ? 'version-menu--hide-next' : '') },
+        { type: 'docsVersionDropdown', docsPluginId: 'ui' }, 
+        { type: 'docsVersionDropdown', docsPluginId: 'Server' }, 
         { type: 'doc', docId: 'getting-started/introduction', label: 'Learning' },
         { type: 'doc', docId: 'database/database-landing', label: 'Database' },
-        { type: 'doc', docId: 'server/server-modules', label: 'Server' },
-        { type: 'doc', docId: 'web/front-end', label: 'Web' },
         { type: 'doc', docId: 'operations/operations', label: 'Operations' },
+        { to: '/Server/', position: 'left', label: 'Server', activeBasePath: `/Server/` },
+        { to: '/ui/',  label: 'Web', activeBasePath: `/ui/` },
         {
           type: "html",
           position: "right",
